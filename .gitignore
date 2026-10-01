@@ -1,0 +1,60 @@
+# ---------------------------------------------------------------
+# AI-Copilot .gitignore
+# ---------------------------------------------------------------
+
+# --- Your data (confidential, large, and often separate git repos) ---
+data/repos/*
+data/docs/*
+!data/repos/.gitkeep
+!data/docs/.gitkeep
+
+# --- Runtime data created by Docker containers ---
+# Qdrant vector storage
+qdrant/
+# OpenWebUI data: user database, accounts, uploaded files, secret key
+openwebui/
+# (only needed if you later add a local Ollama container)
+ollama_data/
+
+# --- Index state and caches (regenerate with sync.py) ---
+index_state.db
+index_state.db-journal
+sync.lock
+vision_cache/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Python ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Secrets / local config ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Editors / OS ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.vs/
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~

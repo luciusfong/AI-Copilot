@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------
+# AI-Copilot .dockerignore
+# Keeps the build context small and keeps your data and secrets
+# out of any image. Place at the project root, next to the folder
+# you use as the Docker build context.
+# ---------------------------------------------------------------
+
+# --- Your data: never bake into an image ---
+data/
+qdrant/
+openwebui/
+ollama_data/
+vision_cache/
+
+# --- Index state and logs ---
+index_state.db
+index_state.db-journal
+sync.lock
+*.log
+logs/
+
+# --- Python environments and caches ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Version control, editors, OS ---
+.git/
+.gitignore
+.vscode/
+.idea/
+.vs/
+.claude/
+.DS_Store
+Thumbs.db
+
+# --- Docs and compose files (not needed inside the image) ---
+README.md
+docker/
+Dockerfile*
+docker-compose*.yml
