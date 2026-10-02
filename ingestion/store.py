@@ -1,9 +1,12 @@
+import os
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 
 from embeddings import VECTOR_SIZE
 
-client = QdrantClient(host="localhost", port=6333)
+client = QdrantClient(host=os.getenv("QDRANT_HOST", "localhost"),
+                      port=int(os.getenv("QDRANT_PORT", "6333")))
 
 COLLECTIONS = ("engineering_code", "engineering_docs")
 

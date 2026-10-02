@@ -21,3 +21,41 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ../openwebui:/app/backend/data
+
+  rag:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: rag
+    restart: unless-stopped
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - qdrant
+
+  ingest:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ingest
+    container_name: ingest
+    restart: unless-stopped
+    working_dir: /app/ingestion
+    command: sh -c "while true; do python sync.py; sleep 60; done"
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - STATE_DIR=/app/state
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ../data:/app/data
+      - ../state:/app/state
+    depends_on:
+      - qdrant

@@ -17,13 +17,14 @@ from ingest_docs import HANDLERS
 from repo_ingest import BATCH, REPOS_DIR, embed_text, iter_cs
 from store import client, ensure_collections
 
-ROOT = Path(__file__).resolve().parent.parent
-DB_PATH = ROOT / "index_state.db"
-LOCK = ROOT / "sync.lock"
 # Bump when chunking, parsing or the embedding model changes: the next sync re-indexes everything.
 PIPELINE_VERSION = 1
 VISION_TYPES = (".pdf", ".docx")
-
+ROOT = Path(__file__).resolve().parent.parent
+STATE_DIR = Path(os.getenv("STATE_DIR", ROOT / "state"))
+STATE_DIR.mkdir(parents=True, exist_ok=True)
+DB_PATH = STATE_DIR / "index_state.db"
+LOCK = STATE_DIR / "sync.lock"
 
 # ---------- manifest ----------
 def open_db():

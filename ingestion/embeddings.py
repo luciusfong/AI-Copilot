@@ -1,6 +1,7 @@
 import requests
+import os
 
-OLLAMA_URL = "http://localhost:11434"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 EMBED_MODEL = "nomic-embed-text"
 VECTOR_SIZE = 768
 

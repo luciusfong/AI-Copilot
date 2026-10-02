@@ -1,15 +1,15 @@
 import base64
 import hashlib
 from pathlib import Path
-
+import os
 import pymupdf
 import requests
 
 from embeddings import OLLAMA_URL
 
 VISION_MODEL = "qwen2.5vl:3b"
-CACHE = Path(__file__).resolve().parent.parent / "vision_cache"
-CACHE.mkdir(exist_ok=True)
+CACHE = Path(os.getenv("STATE_DIR", Path(__file__).resolve().parent.parent / "state")) / "vision_cache"
+CACHE.mkdir(parents=True, exist_ok=True)
 
 PROMPT = (
     "This image comes from an engineering document. Transcribe all readable text, labels, "
