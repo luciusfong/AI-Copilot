@@ -298,3 +298,55 @@ Register-ScheduledTask -TaskName "AI-Copilot Sync" -Action $action -Trigger $tri
 6. **LangGraph agents:** separate code, document and vision agents behind a supervisor.
 7. **PostgreSQL / pgvector:** only if you need relational data alongside vectors.
 8. **Enterprise sources:** GitHub, SMB shares, SharePoint, SQL databases as new ingestion connectors, each feeding the same `sync.py` pattern.
+
+## Resetting the index
+
+Clears everything stored in Qdrant and the sync manifest. **Your source files in
+`data/` are never touched.** Use this after changing the embedding model or chunking,
+or if the index gets into a bad state.
+
+1. Stop anything that re-indexes automatically (otherwise it rebuilds immediately):
+
+```powershell
+   docker compose -f docker/docker-compose.yml stop ingest   # if you use the ingest container
+   # and close watch.py if it is running
+```
+
+2. Reset (asks for confirmation):
+
+```powershell
+   cd ingestion
+   python reset_index.py
+```
+
+   Options: `--yes` skips the prompt; `--vision-cache` also deletes cached image
+   descriptions (keep them by default, since regenerating them is slow).
+
+3. Rebuild the index:
+
+```powershell
+   python sync.py                 # add --vision to describe images
+```
+
+   Then restart the ingest container or watcher if you use one:
+   `docker compose -f docker/docker-compose.yml start ingest`
+
+If you run the ingest container instead of Python on the host:
+
+```powershell
+docker compose -f docker/docker-compose.yml stop ingest
+docker compose -f docker/docker-compose.yml run --rm ingest python reset_index.py
+docker compose -f docker/docker-compose.yml start ingest   # it re-indexes automatically
+```
+
+### Full wipe (also removes Qdrant's own storage)
+
+Only needed if Qdrant itself is corrupted:
+
+```powershell
+docker compose -f docker/docker-compose.yml stop qdrant ingest
+Remove-Item -Recurse -Force .\qdrant\*
+Remove-Item .\state\index_state.db, .\state\sync.lock -ErrorAction SilentlyContinue
+docker compose -f docker/docker-compose.yml start qdrant
+python ingestion/sync.py --full
+```
